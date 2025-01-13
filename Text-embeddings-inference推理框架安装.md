@@ -17,7 +17,7 @@ sudo apt-get install libssl-dev gcc -y
 ## 三、Clone Text-embeddings-inference 项目库
 
 ``` bash
-git clone https://github.com/huggingface/text-embeddings-inference.git
+git clone https://github.com/HiddenPeak/text-embeddings-inference.git
 
 cd text-embeddings-inference
 ```

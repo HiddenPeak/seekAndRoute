@@ -42,7 +42,7 @@ wget https://developer.download.nvidia.com/compute/cuda/12.8.0/local_installers/
 sudo dpkg -i cuda-tegra-repo-ubuntu2204-12-8-local_12.8.0-1_arm64.deb
 sudo cp /var/cuda-tegra-repo-ubuntu2204-12-8-local/cuda-*-keyring.gpg /usr/share/keyrings/
 sudo apt-get update
-sudo apt-get -y install cuda-toolkit-12-8 cuda-compat-12-8 cuda  cuda-12.8
+sudo apt-get -y install cuda-toolkit-12-8 cuda-compat-12-8 cuda-12.8
 
 
 wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/sbsa/cuda-keyring_1.1-1_all.deb

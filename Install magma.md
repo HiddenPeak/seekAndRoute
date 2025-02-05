@@ -42,6 +42,15 @@ sudo cp build/target/lib/pkgconfig/*.pc /usr/local/magma/lib/pkgconfig/
 export LD_LIBRARY_PATH=/usr/local/magma/lib:$LD_LIBRARY_PATH
 ```
 
+### 激活环境变量并检查
+``` bash
+source ~/.bashrc
+```
+终端回现
+``` bash
+/usr/local/magma/lib:/usr/local/cuda-12.6/lib64:/usr/local/magma/lib:/usr/local/cuda-12.6/lib64
+```
+
 ## 测试 [官方参考](https://icl.utk.edu/projectsfiles/magma/doxygen/run__tests_8py.html)
 ``` bash
 # 拷贝测试脚本到已编译的测试程序目录,将测试脚本中的raw_input修改为input,因为python3调整了函数名称

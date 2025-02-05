@@ -2,7 +2,7 @@
 
 ## Python 语言库
 ``` bash
-# Get NVTX using Conda
+# Get NVTX using Conda 暂时不支持 CUDA 12.8
 conda install -c conda-forge nvtx
 # Or Get NVTX using PIP
 python3 -m pip install nvtx

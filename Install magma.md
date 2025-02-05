@@ -24,3 +24,15 @@ cmake -DGPU_TARGET=sm_80 -DCMAKE_CUDA_FLAGS="-DADD_ -O3 -fPIC -DNDEBUG -I/usr/lo
 ``` bash
 cmake --build build -j $(nproc) --target install
 ```
+
+## 安装到默认位置
+``` bash
+# 创建目录
+sudo mkdir -p /usr/local/magma/include
+sudo mkdir -p /usr/local/magma/lib
+sudo mkdir -p /usr/local/magma/lib/pkgconfig
+# 复制到默认位置
+sudo cp build/target/include/* /usr/local/magma/include/
+sudo cp build/target/lib/*.so /usr/local/magma/lib/
+sudo cp build/target/lib/pkgconfig/*.pc /usr/local/magma/lib/pkgconfig/
+```

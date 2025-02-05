@@ -37,9 +37,14 @@ sudo cp build/target/lib/*.so /usr/local/magma/lib/
 sudo cp build/target/lib/pkgconfig/*.pc /usr/local/magma/lib/pkgconfig/
 ```
 
+## 添加环境变量（修改.bashrc）
+``` bash
+export LD_LIBRARY_PATH=/usr/local/magma/lib:$LD_LIBRARY_PATH
+```
+
 ## 测试 [官方参考](https://icl.utk.edu/projectsfiles/magma/doxygen/run__tests_8py.html)
 ``` bash
-# 拷贝测试脚本到已编译的测试程序目录
+# 拷贝测试脚本到已编译的测试程序目录,将测试脚本中的raw_input修改为input,因为python3调整了函数名称
 cd testing
 cp *.py ../build/testing/
 # 回到项目目录

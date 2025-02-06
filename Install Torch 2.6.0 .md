@@ -49,8 +49,6 @@ export USE_PRIORITIZED_TEXT_FOR_LD=1
 export CUDA_HOME=/usr/local/cuda-12.8
 export CUDA_PATH=$CUDA_HOME
 export BLAS=OpenBLAS
-export OPENBLAS_INCLUDE_DIR=/usr/include
-export OPENBLAS_LIBRARY_DIR=/usr/lib/aarch64-linux-gnu
 
 export MAGMA_INCLUDE_DIR=/usr/local/magma/include
 export MAGMA_LIBRARIES=/usr/local/magma/lib/
@@ -61,7 +59,7 @@ export USE_CUDSS=1
 export USE_CUFILE=1
 export USE_XPU=0
 
-python setup.py bdist_wheel
+export CMAKE_PREFIX_PATH="${CONDA_PREFIX:-'$(dirname $(which conda))/../'}:${CMAKE_PREFIX_PATH}"
 ```
 
 ## 构建 wheel

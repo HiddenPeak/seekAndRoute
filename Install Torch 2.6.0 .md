@@ -17,6 +17,15 @@ pip3 install -r requirements.txt
 pip3 install scikit-build
 pip3 install ninja cmake
 
+# **在系统安装LAPACK和 BLAS 库**
+sudo apt-get install liblapack-dev libblas-dev
+
+# **安装 Numa** 
+sudo apt-get install libnuma-dev
+
+# 安装 MPI
+sudo apt-get install openmpi-bin libopenmpi-dev
+
 # 只适用于Intel CPU的环境
 # pip install mkl-static mkl-include
 
@@ -36,6 +45,23 @@ export TORCH_CUDA_ARCH_LIST="8.7"
 export PYTORCH_BUILD_VERSION=2.6.0  # without the leading 'v', e.g. 2.3.0 for PyTorch v2.3.0
 export PYTORCH_BUILD_NUMBER=1
 export USE_PRIORITIZED_TEXT_FOR_LD=1 
+
+export CUDA_HOME=/usr/local/cuda-12.8
+export CUDA_PATH=$CUDA_HOME
+export BLAS=OpenBLAS
+export OPENBLAS_INCLUDE_DIR=/usr/include
+export OPENBLAS_LIBRARY_DIR=/usr/lib/aarch64-linux-gnu
+
+export MAGMA_INCLUDE_DIR=/usr/local/magma/include
+export MAGMA_LIBRARIES=/usr/local/magma/lib/
+
+export USE_CUDNN=1
+export USE_CUSPARSELT=1
+export USE_CUDSS=1
+export USE_CUFILE=1
+export USE_XPU=0
+
+python setup.py bdist_wheel
 ```
 
 ## 构建 wheel

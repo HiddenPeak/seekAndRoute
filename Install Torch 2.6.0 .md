@@ -35,6 +35,7 @@ export USE_PYTORCH_QNNPACK=0
 export TORCH_CUDA_ARCH_LIST="8.7"
 export PYTORCH_BUILD_VERSION=2.6.0  # without the leading 'v', e.g. 2.3.0 for PyTorch v2.3.0
 export PYTORCH_BUILD_NUMBER=1
+export USE_PRIORITIZED_TEXT_FOR_LD=1 
 ```
 
 ## 构建 wheel

@@ -1,7 +1,7 @@
 # 安装 Torch 2.6.0
 ## 拉取指定版本的torch
 ``` bash
-git clone -b 2.6.0 --recursive http://github.com/pytorch/pytorch
+git clone -b v2.6.0 --recursive http://github.com/pytorch/pytorch
 cd pytorch
 ```
 

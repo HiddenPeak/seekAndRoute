@@ -1,7 +1,7 @@
 # 安装 Torch 2.6.0
 ## 拉取指定版本的torch
 ``` bash
-git clone -b v2.6.0 --recursive http://github.com/pytorch/pytorch
+git clone -b v2.6.0 --recursive https://github.com/pytorch/pytorch
 cd pytorch
 ```
 
@@ -201,6 +201,27 @@ Call Stack (most recent call first):
   is dropping the item.
 ```
 
+## 拉取指定版本的torchvision
+``` bash
+git clone -b v0.20.1 --recursive https://github.com/pytorch/vision
+cd vision
+```
+
+## 配置环境变量
+``` bash
+# 启用CUDA
+export CUDA_HOME=/usr/local/cuda-12.8
+export CUDA_PATH=$CUDA_HOME
+export WITH_CUDA=ON
+
+# 安装视频处理后端
+conda install -c conda-forge 'ffmpeg<4.3'
+```
+
+## 构建 wheel
+``` bash
+python setup.py bdist_wheel
+```
 
 ## torch编译后安装 [参考](https://pytorch.org/FBGEMM/fbgemm_gpu-development/InstallationInstructions.html)
 

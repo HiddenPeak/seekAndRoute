@@ -223,6 +223,17 @@ conda install -c conda-forge 'ffmpeg<4.3'
 python setup.py bdist_wheel
 ```
 
+## 拉取指定版本的torch
+``` bash
+git clone -b v2.5.1 --recursive https://github.com/pytorch/audio.git
+cd pytorch
+
+export CUDA_HOME=/usr/local/cuda-12.8
+export CUDA_PATH=$CUDA_HOME
+export USE_CUDA=ON
+python setup.py bdist_wheel
+```
+
 ## torch编译后安装 [参考](https://pytorch.org/FBGEMM/fbgemm_gpu-development/InstallationInstructions.html)
 
 ```bash

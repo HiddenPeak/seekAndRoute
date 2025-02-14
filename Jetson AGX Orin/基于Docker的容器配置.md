@@ -113,9 +113,3 @@ sudo nvidia-ctk runtime configure --runtime=docker
 ``` bash
 sudo systemctl restart docker
 ```
-
-
-
-## 运行 milvus with GPU
-
-https://milvus.io/docs/install_standalone-docker-compose-gpu.md

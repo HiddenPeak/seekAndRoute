@@ -13,13 +13,26 @@
 
 ## Torch构建
 1. Torch 2.5.1
+   1. vision
+   2. audio
+
 2. Torch 2.6.0
+   1. vision
+   2. audio
+
 
 ## vLLM构建
 1. v0.6.6.post1（V0系统的最后版本）
 2. 主线版本（V0/V1兼容版本）
 
+
+
+## SGLang 构建
+
+
+
 ## TEI & TGI构建
+
 1. TEI构建
 2. TGI构建
 

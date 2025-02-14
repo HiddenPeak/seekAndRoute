@@ -1,43 +1,31 @@
-# seekAndRoute
+# 开发事项
 
-## 依赖安装
-1. 系统级别依赖库
-2. 语言环境级别依赖库
-3. Conda
-4. Triton
-5. NVTX
-6. cuDNN
-7. magma
-8. cuDSS
-9. cusparselt
+## 摘要
 
-## Torch构建
-1. Torch 2.5.1
-   1. vision
-   2. audio
+- [ ] LP Mu 部分
+- [ ] AGX Orin 部分
+- [ ] ESP32S3 部分
 
-2. Torch 2.6.0
-   1. vision
-   2. audio
+## LP Mu 部分
 
+- [ ] Altai 部署
+- [ ] 板载网络配置
+- [ ] Wifi接入测试
+- [ ] 生产用Shell
+- [ ] 生产镜像
 
-## vLLM构建
-1. v0.6.6.post1（V0系统的最后版本）
-2. 主线版本（V0/V1兼容版本）
+## AGX Orin 部分
 
+- [ ] 推理框架
+- [ ] 自动读取存储卡Shell
+- [ ] 生产用wheels
+- [ ] 生产用Shell
+- [ ] 生产镜像
 
+## ESP32S3 部分
 
-## SGLang 构建
-
-
-
-## TEI & TGI构建
-
-1. TEI构建
-2. TGI构建
-
-## 经验汇总
-1. 构建须知
-2. 效率工具
-3. 已知问题
-4. 禁止事项
+- [ ] SSH客户端
+- [ ] 密钥生成
+- [ ] 数据加密解密测试
+- [ ] Wifi AP 测试
+- [ ] 手机弹出提示

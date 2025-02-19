@@ -32,6 +32,16 @@ sudo apt-get install libgflags-dev libprotobuf-dev protobuf-compiler libgoogle-g
 # 只适用于Intel CPU的环境
 # pip install mkl-static mkl-include
 
+# 尝试解决解决
+# /usr/bin/objcopy: 'all_gather_*': No such file
+# /usr/bin/objcopy: 'broadcast_*': No such file
+#
+sudo apt install binutils
+apt-get install -y binutils libc6
+apt-get install -y binutils libc-bin
+
+
+
 ```
 
 ## 修改CMakeList.txt文件，增加如下内容：

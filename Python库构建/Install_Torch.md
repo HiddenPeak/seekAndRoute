@@ -1,4 +1,4 @@
-# 安装 Torch 2.6.0
+# 以安装 Torch 2.6.0
 ## 拉取指定版本的torch
 ``` bash
 git clone -b v2.6.0 --recursive https://github.com/pytorch/pytorch
@@ -248,4 +248,40 @@ python setup.py bdist_wheel
 
 ```bash
 pip install fbgemm-gpu
+```
+
+## Torch 安装检测
+``` python
+import torch
+import triton
+import triton.language as tl
+
+
+@triton.jit
+def add_kernel(x_ptr, y_ptr, output_ptr, n_elements, BLOCK_SIZE: tl.constexpr):
+    pid = tl.program_id(axis=0)
+    block_start = pid * BLOCK_SIZE
+    offsets = block_start + tl.arange(0, BLOCK_SIZE)
+    mask = offsets < n_elements
+    x = tl.load(x_ptr + offsets, mask=mask)
+    y = tl.load(y_ptr + offsets, mask=mask)
+    output = x + y
+    tl.store(output_ptr + offsets, output, mask=mask)
+
+
+def add(x: torch.Tensor, y: torch.Tensor):
+    output = torch.empty_like(x)
+    assert x.is_cuda and y.is_cuda and output.is_cuda
+    n_elements = output.numel()
+    grid = lambda meta: (triton.cdiv(n_elements, meta['BLOCK_SIZE']), )
+    add_kernel[grid](x, y, output, n_elements, BLOCK_SIZE=1024)
+    return output
+
+
+# 测试运行
+if __name__ == "__main__":
+    a = torch.randn(1024, device='cuda')
+    b = torch.randn(1024, device='cuda')
+    c = add(a, b)
+    print((c - a - b).abs().max())  # 应该接近 0
 ```

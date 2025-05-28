@@ -10,6 +10,10 @@ sudo jetson_clocks
 ## 安装
 
 ``` bash
+sudo apt update
+sudo apt install python3
+sudo apt install python3-pip
+
 sudo -H pip3 install jetson-stats
 sudo systemctl restart jtop.service
 

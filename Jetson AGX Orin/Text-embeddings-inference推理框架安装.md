@@ -157,6 +157,6 @@ cd text-embeddings-inference
 nano backends/candle/src/compute_cap.rs
 #  在.compile_protos(&["../proto/tei.proto"], &["../proto"])?;之前，添加.protoc_arg("--experimental_allow_proto3_optional")
 nano router/build.rs
-# 安装
+# 安装   -F http 或者 -F grpc 选其一
 cargo install --path router -F candle-cuda -F http -F grpc -F dynamic-linking --no-default-features
 ```

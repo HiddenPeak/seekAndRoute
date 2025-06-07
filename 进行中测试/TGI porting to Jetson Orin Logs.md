@@ -1,3 +1,100 @@
+# N305 TEI 安装脚本
+
+``` bash
+# 安装基础依赖
+sudo apt update
+sudo apt install -y gpg-agent wget
+sudo apt install libssl-dev
+sudo apt install pkg-config
+sudo apt-get install protobuf-compiler
+sudo apt-get install gcc -y
+sudo apt-get install libonnxruntime-dev
+# 安装 cc
+sudo apt install build-essential
+# 验证安装
+cc --version
+
+# 安装mkl（可选）
+wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+sudo apt update
+sudo apt install intel-oneapi-mkl
+sudo apt install intel-oneapi-mkl-devel
+# 添加MKL环境变量 （具体路径需要根据实际调整）
+echo 'export LD_LIBRARY_PATH=/opt/intel/oneapi/compiler/2025.1/lib:/opt/intel/oneapi/mkl/2025.1/lib/intel64:$LD_LIBRARY_PATH' >> ~/.bashrc
+source ~/.bashrc
+
+# 安装 OpenBLAS （可选）
+sudo apt install libopenblas-dev
+
+# 安装 Cargo
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+cargo update
+rustup update
+rustc --version
+# 
+cargo install --path router -F mkl
+# MKL无法正常使用时，考虑使用ORT
+cargo install --path router -F ort
+# 编译
+cargo build --no-default-features --features "candle,http,static-linking" --release
+
+# 验证安装
+text-embeddings-router --version
+# 查看运行参数
+text-embeddings-router --help
+
+# 启动嵌入模型
+text-embeddings-router --model-id /home/rm01/models/embedding/bce_v1 --port 58180 --hostname 0.0.0.0 --prometheus-port 9180
+
+curl 127.0.0.1:58180/embed     -X POST     -d '{"inputs":"What is Deep Learning?"}'     -H 'Content-Type: application/json'
+# 启动重排序模型
+text-embeddings-router --model-id /home/rm01/models/reranker/bce_v1 --port 58181 --hostname 0.0.0.0 --prometheus-port 9181
+
+curl 127.0.0.1:58181/rerank     -X POST     -d '{"query": "What is Deep Learning?", "texts": ["Deep Learning is not...", "Deep learning is..."]}'     -H 'Content-Type: application/json'
+
+```
+
+## Jetson 安装测试脚本
+
+``` bash
+sudo apt-get install protobuf-compiler
+conda install -c conda-forge onnxruntime
+
+export ORT_LIB_LOCATION=$(conda env list | grep base | awk '{print $2}')/lib
+export LD_LIBRARY_PATH=$ORT_LIB_LOCATION:$LD_LIBRARY_PATH
+export PKG_CONFIG_PATH=$ORT_LIB_LOCATION/pkgconfig:$PKG_CONFIG_PATH
+
+# 安装 Cargo
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# 启用环境变量
+. "$HOME/.cargo/env"
+# 拉取
+git clone https://github.com/huggingface/text-embeddings-inference.git
+cd text-embeddings-inference
+# 修改兼容性文件 (参考hiddenpeak版本)
+nano backends/candle/src/compute_cap.rs
+# 检查依赖树
+cargo tree | grep cudarc
+# 编译 
+cargo install --path router -F candle-cuda -F http --features candle-cuda
+# 高性能构建 （支持 static-linking）
+cargo build --no-default-features --features "candle-cuda,http,static-linking" --release
+```
+
+``` bash
+# 服务拉起测试
+text-embeddings-router --model-id /home/rm01/cfe/models/embed/ --port 58180 --hostname 0.0.0.0 --prometheus-port 9180
+
+http://10.10.99.98:58180/
+
+text-embeddings-router --model-id /home/rm01/cfe/models/reranker/ --port 58181 --hostname 0.0.0.0 --prometheus-port 9181
+
+http://10.10.99.98:58181
+```
+
+
+
 # TGI porting to Jetson Orin Logs
 
 ## 配置conda环境

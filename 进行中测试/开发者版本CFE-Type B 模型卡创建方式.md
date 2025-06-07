@@ -1,6 +1,6 @@
 # 开发者版本CFE-Type B 模型卡创建方式
 
-## 操作流程
+## 一、操作流程
 
 1. 模型卡分区
 2. 模型卡格式化
@@ -10,7 +10,7 @@
 6. 创建自动拉起脚本
 7. 重启测试
 
-## 1. 模型卡分区（全新卡）
+### 1. 模型卡分区（全新卡）
 
 开发者版本仅支持 ext4 分区，商业发行版支持（NTFS、exfat、ext4格式）
 
@@ -19,14 +19,14 @@
 sudo fdisk /dev/nvme0n1
 ```
 
-## 2. 模型卡格式化
+ ### 2. 模型卡格式化
 
 ``` bash
 # 命令格式化为 ext4 （假设新分区是 nvme0n1p1）
 sudo mkfs.ext4 /dev/nvme0n1p1
 ```
 
-## 3. 配置模型卡标签
+### 3. 配置模型卡标签
 
 ``` bash
 # 若选择ext4格式磁盘
@@ -45,7 +45,7 @@ sudo chown -R rm01:rm01 cfe
 ls -l
 ```
 
-## 4.1 创建模型卡目录结构
+### 4.1 创建模型卡目录结构
 
 ``` bash
 # 结构如下:
@@ -80,7 +80,7 @@ mkdir -p /home/rm01/cfe/model/reranker
 # - service_output.log
 ```
 
-## 4.3 自动拉起脚本参考1：大语言模型
+### 4.3 自动拉起脚本参考1：大语言模型
 
 ``` bash
 cd /home/rm01/cfe/autoModel
@@ -125,7 +125,7 @@ else
 fi
 ```
 
-## 4.4 自动拉起脚本参考2：嵌入模型
+### 4.4 自动拉起脚本参考2：嵌入模型
 
 ``` bash
 cd /home/rm01/cfe/autoModel
@@ -139,7 +139,7 @@ nano run_embedding_model.sh
 exec /home/rm01/.cargo/bin/text-embeddings-router --model-id /home/rm01/cfe/autoModel/embedding/ --port 58080 --hostname 0.0.0.0 --prometheus-port 58180
 ```
 
-## 4.5 自动拉起脚本参考2：嵌入模型
+### 4.5 自动拉起脚本参考2：嵌入模型
 
 ``` bash
 cd /home/rm01/cfe/autoModel
@@ -153,7 +153,7 @@ nano run_reranker_model.sh
 exec /home/rm01/.cargo/bin/text-embeddings-router --model-id /home/rm01/cfe/autoModel/reranker/ --port 58081 --hostname 0.0.0.0 --prometheus-port 58181
 ```
 
-## 4.6 配置脚本可执行
+### 4.6 配置脚本可执行
 
 ``` bash
 cd /home/rm01/cfe/autoModel
@@ -172,7 +172,7 @@ drwxrwxr-x 2 rm01 rm01 4096  6月  7 02:20 reranker
 -rwxrwxr-x 1 rm01 rm01  164  6月  7 02:29 run_reranker_model.sh
 ```
 
-## 5. 复制或下载模型
+### 5. 复制或下载模型
 
 使用 scp 复制
 
@@ -207,7 +207,7 @@ modelscope download --model Qwen/Qwen3-Reranker-0.6B --local_dir .
 支持的模型类型如下：
 `bert`, `xlm-roberta`, `camembert`, `roberta`, `distilbert`, `nomic_bert`, `mistral`, `gte`, `new`, `qwen2`, `mpnet`, `modernbert`
 
-## 6.创建自动拉起脚本
+### 6.创建自动拉起脚本
 
 ### run_llm.sh
 
@@ -320,7 +320,7 @@ else
 fi
 ```
 
-## 7. 重启测试
+### 7. 重启测试
 
 ``` bash
 # 查看所有模型拉起日志
@@ -333,3 +333,181 @@ journalctl -t embedding_model -f
 # 查看 reranker_model 启动日志
 journalctl -t reranker_model -f
 ```
+
+## 二、服务创建
+
+### 创建自动拉起服务
+
+``` bash
+sudo nano /etc/systemd/system/vllm-auto-run.service
+```
+
+内容如下：
+
+``` ini
+[Unit]
+Description=vLLM Auto-start Service
+After=local-fs.target nvidia-persistenced.service
+Wants=home-rm01-cfe.mount
+
+[Service]
+User=rm01
+Group=rm01
+Type=simple
+Restart=on-failure
+RestartSec=10
+WorkingDirectory=/home/rm01/cfe
+
+Environment="PATH=/home/rm01/miniconda3/envs/vllm085p1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
+Environment="LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/nvidia/lib64:/home/rm01/miniconda3/envs/vllm085p1/lib"
+
+ExecStart=/home/rm01/cfe/autorun.sh
+
+StandardOutput=append:/home/rm01/cfe/service_output.log
+StandardError=append:/home/rm01/cfe/service_error.log
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### 随系统启动服务
+
+``` bash
+sudo chmod +x /home/rm01/cfe/autorun.sh
+cp /usr/lib/aarch64-linux-gnu/libstdc++.so.6 ~/miniconda3/envs/vllm085p1/lib/
+sudo systemctl daemon-reload
+
+
+# 确保缓存数据写入磁盘并清理所有缓存
+sudo sync; echo 3 | sudo tee /proc/sys/vm/drop_caches
+
+sudo systemctl enable vllm-auto-run.service
+```
+
+步骤 1：更新脚本以使用正确路径
+
+1. 修改嵌入模型脚本
+   编辑 /home/rm01/cfe/autoModel/run_embedding_model.sh：
+
+   ```bash
+   #!/bin/bash
+   exec /home/rm01/.cargo/bin/text-embeddings-router --model-id /home/rm01/cfe/model/embedding/gte_Qwen2-1.5B-instruct/ --port 58080 --hostname 0.0.0.0 --prometheus-port 58180
+   ```
+
+2. 修改重排序模型脚本
+   编辑 /home/rm01/cfe/autoModel/run_reranker_model.sh：
+
+   ```bash
+   #!/bin/bash
+   exec /home/rm01/.cargo/bin/text-embeddings-router --model-id /home/rm01/cfe/model/reranker/gte-reranker-modernbert-base/ --port 58081 --hostname 0.0.0.0 --prometheus-port 58181
+   ```
+
+3. 确保脚本可执行：
+
+   ```bash
+   chmod +x /home/rm01/cfe/autoModel/run_embedding_model.sh
+   chmod +x /home/rm01/cfe/autoModel/run_reranker_model.sh
+   ```
+
+4. 验证脚本： 手动运行脚本以确保命令有效：
+
+   ```bash
+   sudo -u rm01 /home/rm01/cfe/autoModel/run_embedding_model.sh
+   sudo -u rm01 /home/rm01/cfe/autoModel/run_reranker_model.sh
+   ```
+
+   - 如果报错，记录输出（可能涉及模型路径、权限或依赖问题）。
+
+步骤 2：检查 systemd 服务文件
+
+服务文件应该已经正确指向脚本，无需修改。但为确保完整性，确认以下文件内容：
+
+- 嵌入模型服务 (/etc/systemd/system/embedding-model.service)：
+
+  ini
+
+  ```ini
+  [Unit]
+  Description=Embedding Model Service (Text Embeddings Inference)
+  After=network.target local-fs.target
+  RequiresMountsFor=/home/rm01/cfe
+  ConditionPathExists=/home/rm01/cfe/autoModel/run_embedding_model.sh
+  
+  [Service]
+  Type=simple
+  ExecStart=/home/rm01/cfe/autoModel/run_embedding_model.sh
+  Restart=on-failure
+  RestartSec=5
+  StartLimitInterval=60s
+  StartLimitBurst=3
+  User=rm01
+  Group=rm01
+  WorkingDirectory=/home/rm01/cfe
+  StandardOutput=journal
+  StandardError=journal
+  KillMode=process
+  RemainAfterExit=no
+  
+  [Install]
+  WantedBy=multi-user.target
+  ```
+
+- 重排序模型服务 (/etc/systemd/system/reranker-model.service)：
+
+  ini
+
+  ```ini
+  [Unit]
+  Description=Reranker Model Service (Text Embeddings Inference)
+  After=network.target local-fs.target
+  RequiresMountsFor=/home/rm01/cfe
+  ConditionPathExists=/home/rm01/cfe/autoModel/run_reranker_model.sh
+  
+  [Service]
+  Type=simple
+  ExecStart=/home/rm01/cfe/autoModel/run_reranker_model.sh
+  Restart=on-failure
+  RestartSec=5
+  StartLimitInterval=60s
+  StartLimitBurst=3
+  User=rm01
+  Group=rm01
+  WorkingDirectory=/home/rm01/cfe
+  StandardOutput=journal
+  StandardError=journal
+  KillMode=process
+  RemainAfterExit=no
+  
+  [Install]
+  WantedBy=multi-user.target
+  ```
+
+步骤 3：重新加载和测试服务
+
+1. 重新加载 systemd 配置：
+
+   ```bash
+   sudo systemctl daemon-reload
+   ```
+
+2. 重启服务：
+
+   ```bash
+   sudo systemctl restart embedding-model.service
+   sudo systemctl restart reranker-model.service
+   ```
+
+3. 检查服务状态：
+
+   ```bash
+   sudo systemctl status embedding-model.service
+   sudo systemctl status reranker-model.service
+   ```
+
+4. 查看详细日志：
+
+``` bash
+journalctl -u embedding-model.service -b
+journalctl -u reranker-model.service -b
+```
+

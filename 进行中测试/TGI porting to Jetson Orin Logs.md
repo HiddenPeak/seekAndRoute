@@ -130,3 +130,30 @@ moe-kernels = [
 ]
 ```
 
+## Text Embeddings Inference On Orin
+
+``` bash
+# 安装系统依赖 参考N305安装脚本的基础依赖
+sudo apt update
+sudo apt install -y gpg-agent wget
+sudo apt install libssl-dev
+sudo apt install pkg-config
+sudo apt-get install protobuf-compiler
+# 检查 PATH 环境变量 查看是否包含 cuda 的 bin 路径
+echo $PATH
+# 安装 Rust 使用默认安装，确保所有下载正确，并安装完成再进入下一步
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# 启用环境变量
+. "$HOME/.cargo/env"
+# 拉取TEI
+git clone https://github.com/huggingface/text-embeddings-inference.git
+cd text-embeddings-inference
+# 修改文件 参考https://github.com/huggingface/text-embeddings-inference/pull/467/files
+nano backends/candle/src/compute_cap.rs
+#  在.compile_protos(&["../proto/tei.proto"], &["../proto"])?;之前，添加.protoc_arg("--experimental_allow_proto3_optional")
+nano router/build.rs
+# 安装  -F http 或者 -F grpc 选其一
+cargo install --path router -F candle-cuda -F http -F dynamic-linking --no-default-features
+cargo install --path router -F candle-cuda -F grpc -F dynamic-linking --no-default-features
+```
+
